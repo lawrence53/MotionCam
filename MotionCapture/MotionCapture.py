@@ -1,12 +1,12 @@
-import numpy
-print numpy.__version__
+import numpy as np
 import cv2
-
-print ("Hello")
-print cv2.__version__
 
 MED_FILT = 5
 UPDATE_RATE = 500 #Update rate in milliseconds.
+SE_DILATE = 20 # Open structuring element 
+SE_ERODE = 3
+MIN_WIDTH = 150
+MIN_HEIGHT = 150
 
 #Snap the first image to pre-load.
 cap = cv2.VideoCapture(0)
@@ -28,9 +28,42 @@ while(1):
 		diff = cv2.subtract(gray, last_gray)
 		cv2.imshow('Diff', diff)
 		
-		#Threshold
+		#Threshold.
 		ret, bin_diff = cv2.threshold(diff, 20, 255, cv2.THRESH_BINARY)
 		cv2.imshow('BinDiff', bin_diff)
+		
+		#Morphological erosion.
+		SE = np.ones((SE_ERODE, SE_ERODE), np.uint8)
+		eroded = cv2.erode(bin_diff, SE, iterations = 1)
+		
+		#Morphological dilated.
+		SE = np.ones((SE_DILATE, SE_DILATE), np.uint8)
+		dilated = cv2.dilate(eroded, SE, iterations = 1)
+		
+		#4-connected component.
+		cc = cv2.connectedComponentsWithStats(dilated, 4, cv2.CV_32S)
+		
+		num_labels = cc[0]
+		labels = cc[1]
+		stats = cc[2]
+		centroids = cc[3]
+		
+		trig = 0
+		trig_lab = 0
+		for i in range (0, num_labels-1):
+			if (stats[i,cv2.CC_STAT_WIDTH] > MIN_WIDTH) &  (stats[i,cv2.CC_STAT_HEIGHT] > MIN_HEIGHT):
+				trig = 1
+				trig_lab = i
+		if trig > 0:
+			x = stats[trig_lab, cv2.CC_STAT_LEFT]
+			y = stats[trig_lab, cv2.CC_STAT_TOP]
+			w = stats[trig_lab, cv2.CC_STAT_WIDTH]
+			h = stats[trig_lab, cv2.CC_STAT_HEIGHT]
+			out_im = cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
+			cv2.imshow("Output", out_im)
+		
+
+		#print(num_labels,labels, stats, centroids)
 		
 		k = cv2.waitKey(UPDATE_RATE) & 0xff
 		if k == ord('q'):
