@@ -1,12 +1,14 @@
 import numpy as np
 import cv2
+import os
 
 MED_FILT = 5
 UPDATE_RATE = 500 #Update rate in milliseconds.
 SE_DILATE = 20 # Open structuring element 
 SE_ERODE = 3
-MIN_WIDTH = 150
-MIN_HEIGHT = 150
+MIN_WIDTH = 100
+MIN_HEIGHT = 100
+MAX_FILES  = 100
 
 #Snap the first image to pre-load.
 cap = cv2.VideoCapture(0)
@@ -14,6 +16,8 @@ ret ,frame = cap.read()
 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 gray_med = cv2.medianBlur(gray,MED_FILT)
 cv2.imshow('Gray',gray)
+
+file_num = 0
 
 while(1):
 	ret ,frame = cap.read()
@@ -66,8 +70,15 @@ while(1):
 			h = stats[trig_lab, cv2.CC_STAT_HEIGHT]
 			out_im = cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
 			cv2.imshow("Output", out_im)
-		
-
+			#num_files = len([name for name in os.listdir("./Captured/") if os.path.isfile(name)])
+			#print ("Number of files is: ", num_files)
+			if file_num < MAX_FILES:
+				file_name = "./Captured/capture%03d.jpg" %file_num
+				print ("Writing to: ", file_name)
+				cv2.imwrite(file_name, out_im)
+				file_num += 1
+			else:
+				print ("Folder full!!!")
 		#print(num_labels,labels, stats, centroids)
 		
 		k = cv2.waitKey(UPDATE_RATE) & 0xff
