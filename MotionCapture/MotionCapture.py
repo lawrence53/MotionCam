@@ -22,6 +22,7 @@ while(1):
 		last_gray = gray_med
 		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		gray_med = cv2.medianBlur(gray,MED_FILT)
+		#gray_med = gray
 		cv2.imshow('Gray',gray_med)
 		
 		#Get the subtracted image.
@@ -50,10 +51,14 @@ while(1):
 		
 		trig = 0
 		trig_lab = 0
-		for i in range (0, num_labels-1):
-			if (stats[i,cv2.CC_STAT_WIDTH] > MIN_WIDTH) &  (stats[i,cv2.CC_STAT_HEIGHT] > MIN_HEIGHT):
-				trig = 1
-				trig_lab = i
+		if num_labels > 0:
+			for i in range (1, num_labels):
+				if (stats[i,cv2.CC_STAT_WIDTH] > MIN_WIDTH) &  (stats[i,cv2.CC_STAT_HEIGHT] > MIN_HEIGHT):
+					trig = 1
+					trig_lab = i
+					print ("Width, Height: ", stats[i,cv2.CC_STAT_WIDTH], stats[i,cv2.CC_STAT_HEIGHT])
+					print (dilated)
+
 		if trig > 0:
 			x = stats[trig_lab, cv2.CC_STAT_LEFT]
 			y = stats[trig_lab, cv2.CC_STAT_TOP]
