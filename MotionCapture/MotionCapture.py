@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import os
+from time import gmtime, strftime
 
 MED_FILT = 5
 UPDATE_RATE = 500 #Update rate in milliseconds.
@@ -8,7 +9,13 @@ SE_DILATE = 20 # Open structuring element
 SE_ERODE = 3
 MIN_WIDTH = 100
 MIN_HEIGHT = 100
-MAX_FILES  = 100
+MAX_FILES  = 5
+
+folder_name = "./Captured/" + strftime("%Y-%m-%d_%H-%M-%S", gmtime()) + "/"
+#folder_name = "./Captured/Fred/"
+print(folder_name)
+os.makedirs(folder_name, 0755)
+
 
 #Snap the first image to pre-load.
 cap = cv2.VideoCapture(0)
@@ -70,10 +77,8 @@ while(1):
 			h = stats[trig_lab, cv2.CC_STAT_HEIGHT]
 			out_im = cv2.rectangle(frame,(x,y),(x+w,y+h),(255,0,0),2)
 			cv2.imshow("Output", out_im)
-			#num_files = len([name for name in os.listdir("./Captured/") if os.path.isfile(name)])
-			#print ("Number of files is: ", num_files)
 			if file_num < MAX_FILES:
-				file_name = "./Captured/capture%03d.jpg" %file_num
+				file_name = folder_name + "%03d.jpg" %file_num
 				print ("Writing to: ", file_name)
 				cv2.imwrite(file_name, out_im)
 				file_num += 1
