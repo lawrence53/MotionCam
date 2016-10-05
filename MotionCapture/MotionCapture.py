@@ -9,7 +9,7 @@ SE_DILATE = 20 # Open structuring element
 SE_ERODE = 3
 MIN_WIDTH = 100
 MIN_HEIGHT = 100
-MAX_FILES  = 5
+MAX_FILES  = 1000
 
 folder_name = "./Captured/" + strftime("%Y-%m-%d_%H-%M-%S", gmtime()) + "/"
 #folder_name = "./Captured/Fred/"
