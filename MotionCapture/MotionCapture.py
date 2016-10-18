@@ -11,6 +11,13 @@ MIN_WIDTH = 100
 MIN_HEIGHT = 100
 MAX_FILES  = 1000
 
+if os.name == 'posix':
+    print("Yeay we're in the pie...")
+    ONPI = True
+else:
+    print ("Booo, still in windows...")
+    ONPI = False
+
 folder_name = "./Captured/" + strftime("%Y-%m-%d_%H-%M-%S", gmtime()) + "/"
 #folder_name = "./Captured/Fred/"
 print(folder_name)
