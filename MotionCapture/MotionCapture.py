@@ -7,9 +7,9 @@ MED_FILT = 5
 UPDATE_RATE = 500 #Update rate in milliseconds.
 SE_DILATE = 20 # Open structuring element 
 SE_ERODE = 3
-MIN_WIDTH = 100
-MIN_HEIGHT = 100
-MAX_FILES  = 1000
+MIN_WIDTH = 70
+MIN_HEIGHT = 70
+MAX_FILES  = 100
 
 if os.name == 'posix':
     print("Yeay we're in the pie...")
@@ -27,6 +27,9 @@ os.makedirs(folder_name, 0755)
 #Snap the first image to pre-load.
 cap = cv2.VideoCapture(0)
 ret ,frame = cap.read()
+if ret==False:
+	print("Error: Could not connect to the camera, exiting!")
+	exit()
 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 gray_med = cv2.medianBlur(gray,MED_FILT)
 cv2.imshow('Gray',gray)
@@ -45,11 +48,11 @@ while(1):
 		
 		#Get the subtracted image.
 		diff = cv2.subtract(gray, last_gray)
-		cv2.imshow('Diff', diff)
+		#cv2.imshow('Diff', diff)
 		
 		#Threshold.
 		ret, bin_diff = cv2.threshold(diff, 20, 255, cv2.THRESH_BINARY)
-		cv2.imshow('BinDiff', bin_diff)
+		#cv2.imshow('BinDiff', bin_diff)
 		
 		#Morphological erosion.
 		SE = np.ones((SE_ERODE, SE_ERODE), np.uint8)
